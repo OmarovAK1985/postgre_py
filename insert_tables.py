@@ -40,7 +40,7 @@ def insert_genres_artists():
             list_id_genres.append(k)
 
     for i, v in zip(range(2, list_excel.max_row + 1), list_id_genres):
-        list_excel.cell(row=i, column=4).value = v
+        list_excel.cell(row=i, column=5).value = v
         file_excel.save(file)
 
     for i, v in zip(list_id_genres, list_id_singer):

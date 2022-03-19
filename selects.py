@@ -1,5 +1,5 @@
 from main import connect_one
-from datetime import timedelta
+
 
 
 def album_selection():
@@ -13,45 +13,21 @@ def album_selection():
 
 
 def long_song_selection():
-    tuple_name = connect_one.connect().execute(f"SELECT duration FROM tracks").fetchall()
-    list_duration = []
+    tuple_name = connect_one.connect().execute(f"SELECT name_of_the_track, duration FROM tracks "
+                                               f"WHERE duration = (SELECT MAX(duration) FROM tracks)").fetchall()
     for i in tuple_name:
-        for val in i:
-            list_duration.append(val)
-    count = timedelta()
-    for i in list_duration:
-        if i > count:
-            count = i
-
-    tuple_name = connect_one.connect().execute(
-        f"SELECT name_of_the_track, duration FROM tracks WHERE duration = '{count}'").fetchall()
-    print('Самая длительная песня:')
-    for i in tuple_name:
-        duration = str(i[1])
-        duration = duration[2:].replace(':', ' минут ') + ' секунд'
-        print(f'\tНазвание песни: {i[0]}, длительность которой {duration}.')
+        print('Самый длительный трек:')
+        print(f'\tНазвание трека: {i[0]}, Длительность трека: {i[1]}')
 
 
 def selection_of_short_songs():
-    tuple_name = connect_one.connect().execute(f"SELECT duration FROM tracks").fetchall()
-    list_duration = []
+    tuple_name = connect_one.connect().execute(f"SELECT name_of_the_track FROM tracks WHERE "
+                                               f"duration < '00:03:30' ORDER BY duration DESC").fetchall()
+    print('Список песен длительность менее 3,5 минут')
+    count = 1
     for i in tuple_name:
-        for val in i:
-            list_duration.append(val)
-    count = timedelta()
-    for i in list_duration:
-        if i > count:
-            count = i
-    count = timedelta(minutes=3, seconds=30)
-    m = 1
-    print(f'Название песен с длительностью до {count}')
-    for i in list_duration:
-        if i < count:
-            tuple_name = connect_one.connect().execute(
-                f"SELECT name_of_the_track FROM tracks WHERE duration = '{i}'").fetchall()
-            for name in tuple_name:
-                print(f'\t{m}. Название песни: {name[0].strip()}')
-                m = m + 1
+        print(f'\t{count}. {i[0].strip()}')
+        count = count + 1
 
 
 def selection_of_collections():
@@ -70,15 +46,12 @@ def selection_of_collections():
 
 
 def selection_of_artists():
-    tuple_names_singer = connect_one.connect().execute(f"SELECT singer_name FROM list_of_singers").fetchall()
-    list_name_singer = []
-    for i in tuple_names_singer:
-        if i[0].count(' ') == 0:
-            list_name_singer.append(i[0])
-    print(f'Имена артистов с одним словом:')
+    tuple_names_singer = connect_one.connect().execute(f"SELECT singer_name FROM list_of_singers "
+                                                       f"WHERE singer_name NOT LIKE '%% %%'").fetchall()
+    print('Исполнители с одним именем: ')
     count = 1
-    for i in list_name_singer:
-        print(f"\t {count}. {i}")
+    for i in tuple_names_singer:
+        print(f"\t{count}. {i[0]}")
         count = count + 1
 
 
@@ -97,3 +70,4 @@ selection_of_short_songs()
 selection_of_collections()
 selection_of_artists()
 song_selection()
+
